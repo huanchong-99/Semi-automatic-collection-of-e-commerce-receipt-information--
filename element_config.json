@@ -1,0 +1,9 @@
+{
+  "reference_points": {
+    "ref1_xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[1]/div/a",
+    "ref2_xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[3]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[1]/div/a"
+  },
+  "page_turn": {
+    "next_page_xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[2]/ul/li[11]"
+  }
+}

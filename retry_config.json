@@ -1,0 +1,26 @@
+{
+  "retry_settings": {
+    "max_retry_attempts": 3,
+    "retry_delay_seconds": 2.0,
+    "use_coordinate_cache": true,
+    "cache_expiry_hours": 24,
+    "retry_strategies": [
+      "cached_coordinates",
+      "smart_element_search",
+      "fallback_xpath"
+    ],
+    "enable_retry_logging": true,
+    "retry_timeout_seconds": 30
+  },
+  "coordinate_validation": {
+    "enable_validation": true,
+    "max_coordinate_age_minutes": 60,
+    "min_success_count": 2,
+    "screen_bounds_check": true
+  },
+  "fallback_options": {
+    "enable_manual_intervention": true,
+    "show_retry_dialog": false,
+    "auto_skip_failed_elements": false
+  }
+}

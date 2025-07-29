@@ -1,0 +1,82 @@
+[
+  {
+    "full_text": "待发货227",
+    "chinese_only": "待发货",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[1]/div[1]/div[2]/li[2]/span",
+    "action": "getText",
+    "custom_name": "待发货的数量",
+    "element_type": "span",
+    "captured_at": "2025-07-25 02:02:34",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "订单编号：250725-590610460261215",
+    "chinese_only": "订单编号",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[1]/td[2]/div/div/div[1]/div[1]/span",
+    "action": "getText",
+    "custom_name": "订单编号",
+    "element_type": "span",
+    "captured_at": "2025-07-25 02:02:46",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "【非宝石角,功能同款】电子吧唧谷子周边二次元徽章,电子吧唧【30天内发货】",
+    "chinese_only": "非宝石角功能同款电子吧唧谷子周边二次元徽章电子吧唧天内发货",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[1]/div/a",
+    "action": "getText",
+    "custom_name": "商品名称",
+    "element_type": "a",
+    "captured_at": "2025-07-25 02:03:01",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "时罗绿【触屏版】",
+    "chinese_only": "时罗绿触屏版",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[3]/div",
+    "action": "getText",
+    "custom_name": "购买的规格",
+    "element_type": "div",
+    "captured_at": "2025-07-25 02:03:15",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "69.00",
+    "chinese_only": "",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[5]/div/span/span/div",
+    "action": "getText",
+    "custom_name": "实收金额",
+    "element_type": "div",
+    "captured_at": "2025-07-25 02:03:26",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "查看",
+    "chinese_only": "查看",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[6]/div/div[1]/div/div/div[2]/div/a/span",
+    "action": "click",
+    "custom_name": "查看1",
+    "element_type": "span",
+    "captured_at": "2025-07-25 02:03:39",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "查看手机号",
+    "chinese_only": "查看手机号",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[6]/div/div[2]/a/span",
+    "action": "click",
+    "custom_name": "查看2",
+    "element_type": "span",
+    "captured_at": "2025-07-25 02:03:55",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  },
+  {
+    "full_text": "复制完整信息",
+    "chinese_only": "复制完整信息",
+    "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[6]/div/div[1]/div/div[2]/div/a/span",
+    "action": "clickAndGetClipboard",
+    "custom_name": "复制完整的收货信息",
+    "element_type": "span",
+    "captured_at": "2025-07-25 02:04:17",
+    "复制完整收货信息": "键在采集模式和正常模式都应该关联"
+  }
+]
