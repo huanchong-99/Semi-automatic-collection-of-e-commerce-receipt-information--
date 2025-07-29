@@ -10,7 +10,7 @@
     "复制完整收货信息": "键在采集模式和正常模式都应该关联"
   },
   {
-    "full_text": "订单编号：250725-590610460261215",
+    "full_text": "订单编号：250725-892341567890123",
     "chinese_only": "订单编号",
     "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[1]/td[2]/div/div/div[1]/div[1]/span",
     "action": "getText",
@@ -20,8 +20,8 @@
     "复制完整收货信息": "键在采集模式和正常模式都应该关联"
   },
   {
-    "full_text": "【非宝石角,功能同款】电子吧唧谷子周边二次元徽章,电子吧唧【30天内发货】",
-    "chinese_only": "非宝石角功能同款电子吧唧谷子周边二次元徽章电子吧唧天内发货",
+    "full_text": "【示例商品A】电子产品配件周边装饰徽章【30天内发货】",
+    "chinese_only": "示例商品电子产品配件周边装饰徽章天内发货",
     "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[1]/div/a",
     "action": "getText",
     "custom_name": "商品名称",
@@ -30,8 +30,8 @@
     "复制完整收货信息": "键在采集模式和正常模式都应该关联"
   },
   {
-    "full_text": "时罗绿【触屏版】",
-    "chinese_only": "时罗绿触屏版",
+    "full_text": "蓝色【标准版】",
+    "chinese_only": "蓝色标准版",
     "xpath": "/html/body/div[1]/div/div/div/main/div[3]/div/div/div/div/div[2]/div[2]/form/div[3]/a/div/div[1]/div/div/div/div/div/div[2]/div/table/tbody/tr[2]/td[1]/div/div[2]/div[3]/div",
     "action": "getText",
     "custom_name": "购买的规格",
