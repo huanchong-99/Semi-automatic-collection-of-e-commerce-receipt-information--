@@ -4,16 +4,19 @@
 剪贴板管理相关
 
 从原始main.py文件中拆分出来的模块
+集成数据缓存管理器，实现写入权限
 """
 
 from utils import *
+from data_cache_manager import get_cache_manager
 
 class ClipboardManager:
     """剪贴板管理相关"""
     
-    def __init__(self):
+    def __init__(self, parent=None):
         """初始化剪贴板管理器"""
-        pass
+        self.cache_manager = get_cache_manager()  # 获取数据缓存管理器
+        self.parent = parent  # 父对象引用，用于获取运行状态
 
     def _get_clipboard_content(self):
         """
@@ -117,24 +120,42 @@ class ClipboardManager:
     
 
     def _store_clipboard_content(self, element_name, content, order_id=None):
+        """存储剪贴板内容到数据缓存（写入权限）"""
         if not content or not isinstance(content, str) or not content.strip():
             self._log_info(f"剪贴板内容为空，未存储", "orange")
             return False
+        
         # 必须有明确订单ID，禁止 None、空字符串、temp_id 写入
         if not order_id or not str(order_id).strip() or str(order_id).startswith("temp_order"):
             self._log_info("未提供有效订单ID，拒绝写入映射", "red")
             return False
-        clean_order_id = order_id.replace("订单编号：", "") if isinstance(order_id, str) else str(order_id)
-        if clean_order_id in self.order_clipboard_contents:
-            existing_content = self.order_clipboard_contents[clean_order_id]
+        
+        # 验证收货信息有效性
+        is_valid, confidence, reason = self._is_valid_shipping_info(content)
+        if not is_valid:
+            self._log_info(f"收货信息无效，拒绝写入: {reason}", "orange")
+            return False
+        
+        # 检查是否已存在更长的收货信息
+        existing_order = self.cache_manager.read_order_by_id(order_id)
+        if existing_order and existing_order.get("shipping_info"):
+            existing_content = existing_order["shipping_info"]
             if len(existing_content) > len(content):
-                self._log_info(f"保留现有更长的收货信息映射 (现有:{len(existing_content)}字符 vs 新内容:{len(content)}字符)", "orange")
-                print(f"DEBUG-STORE-SKIP: 订单ID '{clean_order_id}' 已有更长的收货信息 ({len(existing_content)} > {len(content)})")
+                self._log_info(f"保留现有更长的收货信息 (现有:{len(existing_content)}字符 vs 新内容:{len(content)}字符)", "orange")
                 return False
-        self.order_clipboard_contents[clean_order_id] = content
-        print(f"DEBUG-STORE-MAP: 订单ID '{clean_order_id}' -> 收货信息长度: {len(content)}")
-        self._log_info(f"已建立映射: 订单ID {clean_order_id} <-> 收货信息", "green")
-        return True
+        
+        # 写入到数据缓存
+        success = self.cache_manager.write_order_data(order_id, shipping_info=content)
+        if success:
+            self._log_info(f"已建立映射: 订单ID {order_id} <-> 收货信息 (长度: {len(content)})", "green")
+            
+            # 保持向后兼容性，同时更新旧的映射字典
+            if not hasattr(self, 'order_clipboard_contents'):
+                self.order_clipboard_contents = {}
+            clean_order_id = order_id.replace("订单编号：", "") if isinstance(order_id, str) else str(order_id)
+            self.order_clipboard_contents[clean_order_id] = content
+        
+        return success
 
 
     def _save_clipboard_mappings(self):
@@ -231,6 +252,11 @@ class ClipboardManager:
             last_content = ""
             while self.clipboard_monitor_active:
                 try:
+                    # 检查是否已终止操作
+                    if self.parent and hasattr(self.parent, 'is_running') and not self.parent.is_running:
+                        self._log_info("[监听器] 检测到操作已终止，停止处理剪贴板内容", "orange")
+                        break
+                        
                     current_content = pyperclip.paste()
                     if current_content != last_content and current_content.strip():
                         last_content = current_content
@@ -243,9 +269,23 @@ class ClipboardManager:
                         content_length = len(current_content)
                         self._log_info(f"[监听器] 检测到剪贴板变化，长度: {content_length}，当前订单ID: {current_order_id}", "blue")
                         
-                        # 如果有订单ID，则建立映射
-                        if current_order_id and content_length > 10:
-                            self._store_clipboard_content("监听器捕获", current_content, current_order_id)
+                        # 验证订单ID有效性，拒绝空或无效的订单ID
+                        if current_order_id and str(current_order_id).strip() and content_length > 10:
+                            # 获取当前订单的基础数据（如果有的话）
+                            order_data = None
+                            if hasattr(self, 'collected_data') and self.collected_data:
+                                # 查找匹配的订单数据
+                                for data in self.collected_data:
+                                    if current_order_id in str(data.get('订单编号', '')):
+                                        order_data = data
+                                        break
+                            
+                            # 写入到数据缓存（包含订单数据和收货信息）
+                            if order_data:
+                                self.cache_manager.write_order_data(current_order_id, order_data=order_data, shipping_info=current_content)
+                            else:
+                                # 只写入收货信息
+                                self._store_clipboard_content("监听器捕获", current_content, current_order_id)
                 except:
                     pass
                     

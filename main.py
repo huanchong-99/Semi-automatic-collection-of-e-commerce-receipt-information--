@@ -16,6 +16,7 @@ from captcha_detector import CaptchaDetector
 from page_turner import PageTurner
 from config_manager import ConfigManager
 from retry_manager import RetryManager
+from data_cache_manager import get_cache_manager
 
 class ShippingInfoCollector(
     UIComponents,
@@ -44,7 +45,7 @@ class ShippingInfoCollector(
         BrowserController.__init__(self)
         ElementCollector.__init__(self)
         DataProcessor.__init__(self)
-        ClipboardManager.__init__(self)
+        ClipboardManager.__init__(self, parent=self)
         CaptchaDetector.__init__(self)
         PageTurner.__init__(self)
         ConfigManager.__init__(self)
@@ -63,6 +64,15 @@ class ShippingInfoCollector(
         
         # 同时清空映射文件，确保不会重新加载旧数据
         self._save_clipboard_mappings()
+        
+        # 清空数据缓存，确保多模块数据一致性
+        try:
+            cache_manager = get_cache_manager()
+            cache_manager.clear_cache()
+            self._log_info("已清空数据缓存文件", "green")
+        except Exception as e:
+            self._log_info(f"清空数据缓存失败: {e}", "orange")
+        
         self._log_info("已清空所有历史映射数据和文件，准备收集全新信息", "green")
         
         # 启动时记录日志

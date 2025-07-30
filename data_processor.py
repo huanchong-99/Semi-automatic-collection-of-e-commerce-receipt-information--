@@ -8,6 +8,7 @@
 
 from utils import *
 from coordinate_cache import CoordinateCache
+from data_cache_manager import get_cache_manager
 
 class DataProcessor:
     """数据处理和导出相关"""
@@ -15,7 +16,7 @@ class DataProcessor:
     def __init__(self):
         """初始化数据处理器"""
         self.coordinate_cache = CoordinateCache()
-        pass
+        self.cache_manager = get_cache_manager()  # 获取数据缓存管理器
 
     def run_actions_loop(self, manual_order_count=None):
         """主循环入口 - 支持模块化翻页"""
@@ -390,6 +391,8 @@ class DataProcessor:
                     if match:
                         self.last_captured_order_id = match.group(1)
                         self._log_info(f"已保存订单编号: {self.last_captured_order_id}", "blue")
+                        # 返回纯订单ID而不是完整文本，确保数据一致性
+                        return self.last_captured_order_id
                     else:
                         self.last_captured_order_id = None
                         self._log_info("未能解析订单编号", "red")
@@ -648,7 +651,6 @@ class DataProcessor:
                      if clipboard_content and clipboard_content.strip():
                          self._store_clipboard_content(name, clipboard_content, current_order_id)
                          self._log_info(f"[映射写入] 订单ID: {current_order_id}, 长度: {len(clipboard_content)}, 内容: {clipboard_content[:30]}...", "green")
-                         self._save_clipboard_mappings()
                      else:
                          self._log_info(f"[映射跳过] 订单ID: {current_order_id}, 内容无效或为空", "orange")
                      return clipboard_content
@@ -2069,6 +2071,28 @@ class DataProcessor:
         
         # 检查是否成功采集了订单数据
         if order_data:
+            # 获取订单ID
+            current_order_id = order_data.get('订单编号', '')
+            
+            # 写入订单基础数据到缓存
+            if current_order_id:
+                self.cache_manager.write_order_data(current_order_id, order_data=order_data)
+            
+            # 如果包含收货信息，同时写入收货信息
+            if '复制完整收货信息' in order_data or '复制完整的收货信息' in order_data:
+                if current_order_id and isinstance(current_order_id, str):
+                    shipping_info = order_data.get('复制完整收货信息') or order_data.get('复制完整的收货信息')
+                    if shipping_info:
+                        # 写入到数据缓存
+                        self.cache_manager.write_order_data(current_order_id, shipping_info=shipping_info)
+                        self._log_info(f"已建立订单ID与收货信息的直接关联: {current_order_id}", "green")
+                        
+                        # 保持向后兼容性
+                        clean_order_id = current_order_id.replace('订单编号：', '')
+                        if not hasattr(self, 'order_clipboard_contents'):
+                            self.order_clipboard_contents = {}
+                        self.order_clipboard_contents[clean_order_id] = shipping_info
+            
             # 检查是否是重复订单
             current_order_id = None
             for key in ['订单编号', '订单ID', 'order_id', 'orderid']:
@@ -2132,36 +2156,50 @@ class DataProcessor:
             
 
     def _check_shipping_info_before_export(self):
-        """检查并尝试修复收货信息字段，增加人工审核机制"""
-        if not hasattr(self, 'collected_data') or not self.collected_data:
-            self._log_info("没有收货信息可以导出", "red")
+        """检查并尝试修复收货信息字段，使用数据缓存管理器（只读权限）"""
+        # 从数据缓存读取所有订单数据（只读权限）
+        cached_orders = self.cache_manager.read_all_orders()
+        
+        if not cached_orders:
+            self._log_info("数据缓存中没有订单数据可以导出", "red")
             from tkinter import messagebox
-            messagebox.showwarning("导出失败", "没有收货信息可以导出，请先采集数据。")
+            messagebox.showwarning("导出失败", "数据缓存中没有订单数据，请先采集数据。")
             return False
             
         field_name = '复制完整收货信息'  # 收货信息字段名
         fixed_count = 0
         
-        # 检查所有订单的收货信息
-        orders_to_review = []
+        # 输出缓存统计信息
+        orders_with_shipping = self.cache_manager.get_orders_with_shipping_info()
+        self._log_info(f"数据缓存统计: 总订单数={len(cached_orders)}, 包含收货信息的订单数={len(orders_with_shipping)}", "blue")
         
-        # 确保order_clipboard_contents字典存在
+        # 确保collected_data存在并从缓存重建
+        if not hasattr(self, 'collected_data'):
+            self.collected_data = []
+        
+        # 从缓存重建collected_data（只读操作）
+        self.collected_data.clear()
+        for order_id, cached_data in cached_orders.items():
+            # 创建订单数据副本，排除系统字段
+            system_fields = {"order_id", "created_at", "updated_at", "status", "shipping_info", "shipping_info_updated_at"}
+            order_data = {k: v for k, v in cached_data.items() if k not in system_fields}
+            
+            # 如果缓存中有收货信息，添加到订单数据中
+            if "shipping_info" in cached_data and cached_data["shipping_info"]:
+                order_data[field_name] = cached_data["shipping_info"]
+                fixed_count += 1
+            
+            if order_data:  # 确保有数据才添加
+                self.collected_data.append(order_data)
+        
+        # 保持向后兼容性，更新order_clipboard_contents
         if not hasattr(self, 'order_clipboard_contents'):
             self.order_clipboard_contents = {}
-            self._log_info("警告: 订单ID与收货信息映射字典不存在，已创建空字典", "red")
-            print("DEBUG-EXPORT-ERROR: 订单ID与收货信息映射字典不存在，已创建空字典")
-        else:
-            # 导出前先确保所有映射都已保存到文件
-            self._save_clipboard_mappings()
-            self._log_info("已将当前所有映射保存到文件", "blue")
-            
-        # 输出当前订单ID与收货信息的映射关系
-        self._log_info(f"导出前订单ID与收货信息映射关系：", "blue")
-        print(f"DEBUG-EXPORT-MAP-COUNT: 映射字典中包含 {len(self.order_clipboard_contents)} 个订单")
-        for order_id, content in self.order_clipboard_contents.items():
-            content_preview = content[:30] + "..." if content else "空"
-            print(f"DEBUG-EXPORT-MAP: 订单ID '{order_id}' -> 收货信息: '{content_preview}'")
-            self._log_info(f"订单ID: {order_id}, 收货信息: {content_preview}", "blue")
+        self.order_clipboard_contents.clear()
+        
+        for order_id, shipping_info in orders_with_shipping.items():
+            clean_order_id = order_id.replace('订单编号：', '') if isinstance(order_id, str) else str(order_id)
+            self.order_clipboard_contents[clean_order_id] = shipping_info["shipping_info"]
         
         # 检查每个订单的收货信息是否唯一
         shipping_info_set = set()
@@ -2262,10 +2300,7 @@ class DataProcessor:
         return fixed_count > 0
 
 
-    def _save_screenshot(self, tag):
-        """保存屏幕截图用于调试 - 已禁用"""
-        # 不再保存截图
-        pass
+
     
     def _export_excel(self):
         """导出数据到Excel（正常模式专用）"""
