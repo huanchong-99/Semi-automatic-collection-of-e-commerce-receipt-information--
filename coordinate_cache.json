@@ -1,36 +1,36 @@
 {
   "coordinates": {
     "查看1": {
-      "screen_x": 1208,
-      "screen_y": 551,
+      "screen_x": 44,
+      "screen_y": 147,
       "element_offset_x": 0,
       "element_offset_y": -7,
-      "success_count": 95,
-      "last_success": "2025-07-29T16:17:58.287714",
+      "success_count": 316,
+      "last_success": "2025-08-11T16:12:24.433390",
       "created_at": "2025-07-29T00:55:38.232620",
-      "scroll_y": 268
+      "scroll_y": 0
     },
     "查看2": {
-      "screen_x": 1224,
-      "screen_y": 553,
+      "screen_x": 44,
+      "screen_y": 149,
       "element_offset_x": 0,
       "element_offset_y": -5,
-      "success_count": 87,
-      "last_success": "2025-07-29T16:18:02.553729",
+      "success_count": 308,
+      "last_success": "2025-08-11T16:12:29.799729",
       "created_at": "2025-07-29T00:55:27.159253",
-      "scroll_y": 277
+      "scroll_y": 0
     },
     "复制完整的收货信息": {
-      "screen_x": 1279,
-      "screen_y": 558,
+      "screen_x": 1267,
+      "screen_y": 846,
       "element_offset_x": 0,
       "element_offset_y": 0,
-      "success_count": 90,
-      "last_success": "2025-07-29T16:18:06.859187",
+      "success_count": 310,
+      "last_success": "2025-08-11T16:12:11.556142",
       "created_at": "2025-07-29T00:55:28.766092",
-      "scroll_y": 259
+      "scroll_y": 2536
     }
   },
   "cache_version": "1.0",
-  "last_updated": "2025-07-29T16:18:06.862732"
+  "last_updated": "2025-08-11T16:12:29.802368"
 }
