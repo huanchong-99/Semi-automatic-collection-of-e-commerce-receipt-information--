@@ -381,9 +381,9 @@ class DataProcessor:
                     self._log_info(f"从属性获取元素名称失败，使用操作名称'{name}'的偏移量: X={element_offset_x}, Y={element_offset_y}", "orange")
             
             if action == "getText":
-                # 获取文本前2秒延迟
-                self._log_info(f"获取文本前延迟2秒: {name}", "blue")
-                time.sleep(2.0)
+                # 获取文本操作
+                self._log_info(f"获取文本操作: {name}", "blue")
+                # time.sleep(2.0)  # 移除延迟
                 
                 import re
                 text = element.text.strip()
@@ -402,9 +402,9 @@ class DataProcessor:
                         self._log_info("未能解析订单编号", "red")
                 return text
             elif action in ["click", "clickAndGetClipboard"]:
-                # 点击前3.2秒延迟（原1.2秒 + 新增2秒）
-                self._log_info(f"点击前延迟3.2秒: {name}", "blue")
-                time.sleep(3.2)
+                # 点击前延迟修改为1秒
+                self._log_info(f"点击前延迟1秒: {name}", "blue")
+                time.sleep(1.0)
                 
                 # 在点击前再次检查暂停状态和验证码 - 阶段1修复：点击前检查
                 if hasattr(self, 'is_paused') and self.is_paused:
@@ -441,7 +441,7 @@ class DataProcessor:
                     
                     # 执行点击
                     self._switch_focus_to_browser()
-                    time.sleep(2.3)  # 原0.3秒 + 新增2秒
+                    time.sleep(0.3)  # 浏览器焦点切换延迟修改为0.3秒
                     pyautogui.moveTo(int(screen_x), int(screen_y))
                     pyautogui.click()
                     self._log_info(f"已使用缓存坐标点击 '{name}'", "green")
@@ -463,7 +463,7 @@ class DataProcessor:
                     # 正常元素处理流程
                     # 滚动到元素可见
                     self.driver.execute_script('arguments[0].scrollIntoView({behavior: "smooth", block: "center"});', element)
-                    time.sleep(2.5)  # 原0.5秒 + 新增2秒
+                    time.sleep(0.3)  # 滚动操作延迟修改为0.3秒
                     
                     # 获取浏览器窗口位置和尺寸
                     window_pos = self.driver.get_window_position()
@@ -570,7 +570,7 @@ class DataProcessor:
                         
                         # 点击前确保浏览器窗口有焦点
                         self._switch_focus_to_browser()
-                        time.sleep(2.3)  # 原0.3秒 + 新增2秒
+                        time.sleep(0.3)  # 浏览器焦点切换延迟修改为0.3秒
                         
                         # 记录移动前的鼠标位置
                         current_pos = pyautogui.position()
@@ -598,8 +598,8 @@ class DataProcessor:
                         except Exception as e:
                             self._log_info(f"缓存坐标失败 '{name}': {str(e)}", "orange")
                         
-                        # 点击后延迟2.5秒，让浏览器有时间响应（原0.5秒 + 新增2秒）
-                        time.sleep(2.5)
+                        # 点击后延迟修改为1秒
+                        time.sleep(1.0)
                         
                         # 对于'复制完整的收货信息'元素，跳过额外点击以避免剪贴板内容重复
                         if name != '复制完整的收货信息':
@@ -613,7 +613,7 @@ class DataProcessor:
                             extra_click_after_pos = pyautogui.position()
                             self._log_info(f"[坐标日志] 元素'{name}' - 额外点击时坐标: X={extra_click_after_pos.x}, Y={extra_click_after_pos.y}", "green")
                             self._log_info(f"已执行额外的原地点击 '{name}'", "blue")
-                            time.sleep(2.3)  # 原0.3秒 + 新增2秒
+                            time.sleep(1.0)  # 额外点击延迟修改为1秒
                         else:
                             self._log_info(f"跳过'{name}'的额外点击，避免剪贴板内容重复", "blue")
                         
@@ -628,15 +628,15 @@ class DataProcessor:
                 if action == "clickAndGetClipboard":
                      # 对于'复制完整的收货信息'元素，如果跳过了额外点击，直接获取剪贴板内容
                      if name == '复制完整的收货信息':
-                         self._log_info(f"直接获取剪贴板内容，等待2.5秒", "blue")
-                         time.sleep(2.5)  # 原0.5秒 + 新增2秒
+                         self._log_info(f"直接获取剪贴板内容", "blue")
+                         # time.sleep(2.5)  # 移除延迟
                          self._manage_focus()
                          clipboard_content = pyperclip.paste()
                      else:
                          self._log_info(f"点击后等待剪贴板内容更新...", "blue")
-                         time.sleep(3.5)  # 原1.5秒 + 新增2秒
+                         # time.sleep(3.5)  # 剪贴板操作延迟移除
                          self._manage_focus()
-                         time.sleep(2.5)  # 原0.5秒 + 新增2秒
+                         # time.sleep(2.5)  # 信息复制操作延迟移除
                          clipboard_content = self._wait_for_clipboard_content(
                              timeout=12.0,
                              check_interval=0.5,
@@ -695,7 +695,7 @@ class DataProcessor:
                 self._log_info(f"警告: 使用原始XPath找到的元素'{name}'尺寸异常: width={rect['width']}, height={rect['height']}", "orange")
                 # 尝试滚动到元素
                 self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", element)
-                time.sleep(2.5)  # 原0.5秒 + 新增2秒
+                time.sleep(0.3)  # 多元素查找操作延迟修改为0.3秒
             
             return element
         except Exception as e:
@@ -716,7 +716,7 @@ class DataProcessor:
                 # 滚动到相对XPath找到的元素位置，使目标区域可见
                 self._log_info(f"滚动到相对XPath找到的元素位置，尝试让原始XPath重新生效", "blue")
                 self.driver.execute_script("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", element)
-                time.sleep(2.8)  # 原0.8秒 + 新增2秒，等待滚动完成
+                time.sleep(0.3)  # 滚动完成等待延迟修改为0.3秒
                 
                 # 滚动后重新尝试使用原始XPath查找
                 try:
