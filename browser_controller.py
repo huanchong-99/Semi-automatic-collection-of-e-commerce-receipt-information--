@@ -7,6 +7,7 @@
 """
 
 from utils import *
+from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
 
@@ -122,7 +123,7 @@ class BrowserController:
         }, true);
         '''
         self.driver.execute_script(setup_script)
-        iframes = self.driver.find_elements(By.TAG_NAME, 'iframe')
+        iframes = self.driver.find_elements('tag name', 'iframe')
         for i in range(len(iframes)):
             try:
                 self.driver.switch_to.frame(i)

@@ -177,6 +177,11 @@ def auto_install_dependencies(missing_packages):
 
 def check_and_install_dependencies():
     """检查并安装缺失的依赖包，避免重复安装"""
+    # 检测是否是打包环境
+    if getattr(sys, 'frozen', False):
+        print("打包环境运行，跳过依赖自动安装")
+        return True
+        
     import importlib
     try:
         from importlib.metadata import distribution
